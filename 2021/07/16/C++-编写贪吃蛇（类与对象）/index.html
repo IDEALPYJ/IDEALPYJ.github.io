@@ -84,6 +84,37 @@
   </script>
   
     
+      
+      
+      
+      
+        
+        
+        
+        <script>
+          function prismThemeChange() {
+            if(document.getElementById('theme-color').dataset.mode === 'dark') {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism-tomorrow.min.css', '[data-prism]', 'prism-tomorrow');
+              } else {
+                loadCSS('/js/lib/prism/prism-tomorrow.min.css', 'prism', 'prism-tomorrow');
+              }
+            } else {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism.min.css', '[data-prism]', 'prism');
+              } else {
+                loadCSS('/js/lib/prism/prism.min.css', 'prism', 'prism');
+              }
+            }
+          }
+          prismThemeChange()
+        </script>
+      
+      
+        
+        <link rel="stylesheet" href="/js/lib/prism/prism-line-numbers.min.css">
+      
+    
   
   <script>
     // control reverse button
@@ -123,15 +154,18 @@
         localStorage.removeItem('user-color-scheme');
         document.getElementById('theme-color').content = themeColor[setting];
         document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
       } else if(reverseDarkList[setting]) {
         document.documentElement.setAttribute('data-user-color-scheme', setting);
         document.getElementById('theme-color').content = themeColor[setting];
         document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
       } else {
         document.documentElement.removeAttribute('data-user-color-scheme');
         localStorage.removeItem('user-color-scheme');
         document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
         document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+        prismThemeChange();
       }
     };
     setDarkmode();
@@ -265,7 +299,7 @@
     
     
       <span class="dot"></span>
-      <span>2.4k 字</span>
+      <span>2.5k 字</span>
     
   </div>
   
@@ -306,14 +340,240 @@
 <h3 id="点类"><a class="markdownIt-Anchor" href="#点类"></a> 点类</h3>
 <p>在贪吃蛇中，不论是蛇本身还是食物都是由<strong>点</strong>组成的，在代码编写过程中，需要进行大量的对<strong>点</strong>的操作。<br />
 在编写游戏本体之前，我首先声明定义了点（Point）类，并编写了一些函数以便后面使用。</p>
-<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	COORD pos;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Point</span> () &#123; pos.X = <span class="number">0</span>; pos.Y = <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Point</span> (UINT x , UINT y)</span><br><span class="line">	&#123;</span><br><span class="line">		pos.X = x;</span><br><span class="line">		pos.Y = y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Point</span> (<span class="type">const</span> Point &amp;p)</span><br><span class="line">		:<span class="built_in">pos</span> (p.pos)</span><br><span class="line">	&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPos</span> <span class="params">(UINT x , UINT y)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		pos.X = x;</span><br><span class="line">		pos.Y = y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPosPoint</span> <span class="params">(<span class="type">const</span> Point &amp;p)</span> </span>&#123; pos = p.pos; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPosRandom</span> <span class="params">(<span class="type">int</span> isHead = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//生成随机位置的点，主要用于蛇的初始化和食物的生成</span></span></span><br><span class="line"><span class="function">	<span class="comment">//和食物不同，蛇头具有特殊性，它不能过于靠近地图的边缘，所以这里设计了isHead参数</span></span></span><br><span class="line"><span class="function">    <span class="comment">//当isHead不填时默认为零，此时用于生成食物的位置</span></span></span><br><span class="line"><span class="function">    <span class="comment">//当isHead传入参数为1时生成蛇头位置</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (isHead == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">srand</span> (<span class="built_in">time</span> (<span class="literal">NULL</span>));</span><br><span class="line">			pos.X = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">			pos.Y = <span class="built_in">rand</span> () % <span class="number">10</span> + <span class="number">7</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">srand</span> (<span class="built_in">time</span> (<span class="literal">NULL</span>));</span><br><span class="line">			pos.X = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">			pos.Y = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">movePoint</span> <span class="params">(<span class="type">int</span> d)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (d == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.Y--;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.Y++;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">3</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.X--;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">4</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.X++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function">COORD <span class="title">getPos</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> pos;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">printPoint</span> <span class="params">(<span class="type">char</span> c)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		HANDLE hOutput = <span class="built_in">GetStdHandle</span> (STD_OUTPUT_HANDLE);</span><br><span class="line">		<span class="built_in">SetConsoleCursorPosition</span> (hOutput , pos);</span><br><span class="line">		cout &lt;&lt; c;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">class Point
+&#123;
+private:
+	COORD pos;
+public:
+	Point () &#123; pos.X &#x3D; 0; pos.Y &#x3D; 0; &#125;
+
+	Point (UINT x , UINT y)
+	&#123;
+		pos.X &#x3D; x;
+		pos.Y &#x3D; y;
+	&#125;
+
+	Point (const Point &amp;p)
+		:pos (p.pos)
+	&#123;
+	&#125;
+
+	void setPos (UINT x , UINT y)
+	&#123;
+		pos.X &#x3D; x;
+		pos.Y &#x3D; y;
+	&#125;
+
+	void setPosPoint (const Point &amp;p) &#123; pos &#x3D; p.pos; &#125;
+
+	void setPosRandom (int isHead &#x3D; 0)
+	&#x2F;&#x2F;生成随机位置的点，主要用于蛇的初始化和食物的生成
+	&#x2F;&#x2F;和食物不同，蛇头具有特殊性，它不能过于靠近地图的边缘，所以这里设计了isHead参数
+    &#x2F;&#x2F;当isHead不填时默认为零，此时用于生成食物的位置
+    &#x2F;&#x2F;当isHead传入参数为1时生成蛇头位置
+	&#123;
+		if (isHead &#x3D;&#x3D; 1)
+		&#123;
+			srand (time (NULL));
+			pos.X &#x3D; rand () % 18 + 1;
+			pos.Y &#x3D; rand () % 10 + 7;
+		&#125;
+		else
+		&#123;
+			srand (time (NULL));
+			pos.X &#x3D; rand () % 18 + 1;
+			pos.Y &#x3D; rand () % 18 + 1;
+		&#125;
+	&#125;
+
+	void movePoint (int d)
+	&#123;
+		if (d &#x3D;&#x3D; 1)
+		&#123;
+			pos.Y--;
+		&#125;
+		else if (d &#x3D;&#x3D; 2)
+		&#123;
+			pos.Y++;
+		&#125;
+		else if (d &#x3D;&#x3D; 3)
+		&#123;
+			pos.X--;
+		&#125;
+		else if (d &#x3D;&#x3D; 4)
+		&#123;
+			pos.X++;
+		&#125;
+	&#125;
+
+	COORD getPos (void)
+	&#123;
+		return pos;
+	&#125;
+
+	void printPoint (char c)
+	&#123;
+		HANDLE hOutput &#x3D; GetStdHandle (STD_OUTPUT_HANDLE);
+		SetConsoleCursorPosition (hOutput , pos);
+		cout &lt;&lt; c;
+	&#125;
+&#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这个类实际上十分简单，它只包含自身位置这一个成员变量。成员函数的功能也大多为对点进行初始化或再赋值。这里面涉及到一些控制台的操作，不明白的可以去百度一下。这里只是简单涉及到，还是很好理解的。<br />
 有了这个工具后就可以开始游戏本体的编写了。</p>
 <h3 id="蛇"><a class="markdownIt-Anchor" href="#蛇"></a> 蛇</h3>
-<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Snake</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Point p[<span class="number">400</span>];</span><br><span class="line">	<span class="type">int</span> dirction;<span class="comment">//蛇目前的运动方向 1上2下3左4右</span></span><br><span class="line">	<span class="type">int</span> lenth;<span class="comment">//蛇的长度</span></span><br><span class="line">	<span class="keyword">friend</span> <span class="keyword">class</span> <span class="title class_">Game</span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Snake</span> ()</span><br><span class="line">	&#123;</span><br><span class="line">		lenth = <span class="number">3</span>;</span><br><span class="line">		p[<span class="number">0</span>].<span class="built_in">setPosRandom</span> (<span class="number">1</span>);</span><br><span class="line">		p[<span class="number">1</span>].<span class="built_in">setPos</span> (p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X , p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y + <span class="number">1</span>);</span><br><span class="line">		p[<span class="number">2</span>].<span class="built_in">setPos</span> (p[<span class="number">1</span>].<span class="built_in">getPos</span> ().X , p[<span class="number">1</span>].<span class="built_in">getPos</span> ().Y + <span class="number">1</span>);</span><br><span class="line">		dirction = <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">class Snake
+&#123;
+private:
+	Point p[400];
+	int dirction;&#x2F;&#x2F;蛇目前的运动方向 1上2下3左4右
+	int lenth;&#x2F;&#x2F;蛇的长度
+	friend class Game;
+public:
+	Snake ()
+	&#123;
+		lenth &#x3D; 3;
+		p[0].setPosRandom (1);
+		p[1].setPos (p[0].getPos ().X , p[0].getPos ().Y + 1);
+		p[2].setPos (p[1].getPos ().X , p[1].getPos ().Y + 1);
+		dirction &#x3D; 1;
+	&#125;
+&#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>蛇这个类本身十分简单，成员函数只有一个无参构造函数。设计这个类的目的主要是储存与蛇本身有关的一些变量，并对蛇进行初始化。为了方便后面的操作，我将另一个Game类声明为Snake类的友元，这样Game中的函数也可以对Snake类中的变量直接进行操作了。</p>
 <h3 id="游戏功能"><a class="markdownIt-Anchor" href="#游戏功能"></a> 游戏功能</h3>
-<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Game</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Snake s;</span><br><span class="line">	<span class="type">int</span> map[<span class="number">20</span>][<span class="number">20</span>] = &#123;<span class="number">0</span>&#125;;<span class="comment">//0为空地 1为蛇身 2为食物 -1为墙</span></span><br><span class="line">	Point food;</span><br><span class="line">	<span class="type">int</span> score;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Game</span> ()</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++)<span class="comment">//这里初始化墙并在控制台打印出来</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="function">Point <span class="title">p1</span> <span class="params">(UINT (i) , UINT (<span class="number">0</span>))</span></span>;</span><br><span class="line">			map[i][<span class="number">0</span>] = <span class="number">-1</span>;</span><br><span class="line">			p1.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p2</span> <span class="params">(UINT (i) , UINT (<span class="number">19</span>))</span></span>;</span><br><span class="line">			map[i][<span class="number">19</span>] = <span class="number">-1</span>;</span><br><span class="line">			p2.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p3</span> <span class="params">(UINT (<span class="number">0</span>) , UINT (i))</span></span>;</span><br><span class="line">			map[<span class="number">0</span>][i] = <span class="number">-1</span>;</span><br><span class="line">			p3.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p4</span> <span class="params">(UINT (<span class="number">19</span>) , UINT (i))</span></span>;</span><br><span class="line">			map[<span class="number">19</span>][i] = <span class="number">-1</span>;</span><br><span class="line">			p4.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="built_in">Sleep</span> (<span class="number">50</span>);<span class="comment">//这里是用来做出一种动画的效果</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; s.lenth; i++)<span class="comment">//这里在map中标记好蛇</span></span><br><span class="line">		&#123;</span><br><span class="line">			map[s.p[i].<span class="built_in">getPos</span> ().X][s.p[i].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)<span class="comment">//在控制台打印出蛇</span></span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		score = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">creatFood</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Point food;</span><br><span class="line">		<span class="keyword">while</span> (map[food.<span class="built_in">getPos</span> ().X][food.<span class="built_in">getPos</span> ().Y] != <span class="number">0</span>)<span class="comment">//只有当随机生成的位置在map中为0，也就是为空地时才进行下一步操作</span></span><br><span class="line">		&#123;</span><br><span class="line">			food.<span class="built_in">setPosRandom</span> ();</span><br><span class="line">		&#125;</span><br><span class="line">		map[food.<span class="built_in">getPos</span> ().X][food.<span class="built_in">getPos</span> ().Y] = <span class="number">2</span>;</span><br><span class="line">		food.<span class="built_in">printPoint</span> (<span class="string">&#x27;$&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">eatFood</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		score = score + <span class="number">100</span>;</span><br><span class="line">		<span class="function">Point <span class="title">temph</span> <span class="params">(s.p[<span class="number">0</span>])</span></span>;</span><br><span class="line">		<span class="function">Point <span class="title">tempt</span> <span class="params">(s.p[s.lenth - <span class="number">1</span>])</span></span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">movePoint</span> (s.dirction);</span><br><span class="line">		map[s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X][s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = s.lenth - <span class="number">1</span>; i &gt; <span class="number">1</span>; i--)</span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">setPosPoint</span> (s.p[i - <span class="number">1</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		s.p[<span class="number">1</span>].<span class="built_in">setPosPoint</span> (temph);</span><br><span class="line">		s.lenth++;</span><br><span class="line">		s.p[s.lenth - <span class="number">1</span>].<span class="built_in">setPosPoint</span> (tempt);</span><br><span class="line">		<span class="built_in">Sleep</span> (<span class="number">500</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">snakeGo</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="function">Point <span class="title">temp</span> <span class="params">(s.p[<span class="number">0</span>])</span></span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">movePoint</span> (s.dirction);</span><br><span class="line">		map[s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X][s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		map[s.p[s.lenth - <span class="number">1</span>].<span class="built_in">getPos</span> ().X][s.p[s.lenth - <span class="number">1</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">0</span>;</span><br><span class="line">		s.p[s.lenth - <span class="number">1</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = s.lenth - <span class="number">1</span>; i &gt; <span class="number">1</span>; i--)</span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">setPosPoint</span> (s.p[i - <span class="number">1</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		s.p[<span class="number">1</span>].<span class="built_in">setPosPoint</span> (temp);</span><br><span class="line">		<span class="built_in">Sleep</span> (<span class="number">500</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">isEatorEnd</span> <span class="params">(Point q , <span class="type">int</span> dirc)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//传入蛇头坐标和此时蛇行进的方向，然后判断蛇下一次运动后是否吃到食物或撞到墙壁或自身，这里利用map进行判断</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		q.<span class="built_in">movePoint</span> (dirc);</span><br><span class="line">		<span class="keyword">if</span> (map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">-1</span> || map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setDirection</span> <span class="params">(<span class="type">char</span> d)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//注意到蛇在运动过程中不能直接向反方向移动</span></span></span><br><span class="line"><span class="function">	<span class="comment">//比如当蛇向上走时只能向左右转而不能直接向后转</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (d == <span class="string">&#x27;w&#x27;</span> &amp;&amp; s.dirction != <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;s&#x27;</span> &amp;&amp; s.dirction != <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">2</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;a&#x27;</span> &amp;&amp; s.dirction != <span class="number">4</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">3</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;d&#x27;</span> &amp;&amp; s.dirction != <span class="number">3</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">4</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function">Point &amp;<span class="title">getHead</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.p[<span class="number">0</span>]; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getDirc</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.dirction; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getPoint</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> score; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getLenth</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.lenth; &#125;</span><br><span class="line">&#125;;</span><br></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">class Game
+&#123;
+private:
+	Snake s;
+	int map[20][20] &#x3D; &#123;0&#125;;&#x2F;&#x2F;0为空地 1为蛇身 2为食物 -1为墙
+	Point food;
+	int score;
+public:
+	Game ()
+	&#123;
+		for (int i &#x3D; 0; i &lt; 20; i++)&#x2F;&#x2F;这里初始化墙并在控制台打印出来
+		&#123;
+			Point p1 (UINT (i) , UINT (0));
+			map[i][0] &#x3D; -1;
+			p1.printPoint (&#39;&#x3D;&#39;);
+			Point p2 (UINT (i) , UINT (19));
+			map[i][19] &#x3D; -1;
+			p2.printPoint (&#39;&#x3D;&#39;);
+			Point p3 (UINT (0) , UINT (i));
+			map[0][i] &#x3D; -1;
+			p3.printPoint (&#39;&#x3D;&#39;);
+			Point p4 (UINT (19) , UINT (i));
+			map[19][i] &#x3D; -1;
+			p4.printPoint (&#39;&#x3D;&#39;);
+			Sleep (50);&#x2F;&#x2F;这里是用来做出一种动画的效果
+		&#125;
+		for (int i &#x3D; 0; i &lt; s.lenth; i++)&#x2F;&#x2F;这里在map中标记好蛇
+		&#123;
+			map[s.p[i].getPos ().X][s.p[i].getPos ().Y] &#x3D; 1;
+		&#125;
+		for (int i &#x3D; 0; i &lt; 3; i++)&#x2F;&#x2F;在控制台打印出蛇
+		&#123;
+			s.p[i].printPoint (&#39;O&#39;);
+		&#125;
+		score &#x3D; 0;
+	&#125;
+
+	void creatFood (void)
+	&#123;
+		Point food;
+		while (map[food.getPos ().X][food.getPos ().Y] !&#x3D; 0)&#x2F;&#x2F;只有当随机生成的位置在map中为0，也就是为空地时才进行下一步操作
+		&#123;
+			food.setPosRandom ();
+		&#125;
+		map[food.getPos ().X][food.getPos ().Y] &#x3D; 2;
+		food.printPoint (&#39;$&#39;);
+	&#125;
+
+	void eatFood (void)
+	&#123;
+		score &#x3D; score + 100;
+		Point temph (s.p[0]);
+		Point tempt (s.p[s.lenth - 1]);
+		s.p[0].movePoint (s.dirction);
+		map[s.p[0].getPos ().X][s.p[0].getPos ().Y] &#x3D; 1;
+		s.p[0].printPoint (&#39;O&#39;);
+		for (int i &#x3D; s.lenth - 1; i &gt; 1; i--)
+		&#123;
+			s.p[i].setPosPoint (s.p[i - 1]);
+		&#125;
+		s.p[1].setPosPoint (temph);
+		s.lenth++;
+		s.p[s.lenth - 1].setPosPoint (tempt);
+		Sleep (500);
+	&#125;
+
+	void snakeGo (void)
+	&#123;
+		Point temp (s.p[0]);
+		s.p[0].movePoint (s.dirction);
+		map[s.p[0].getPos ().X][s.p[0].getPos ().Y] &#x3D; 1;
+		s.p[0].printPoint (&#39;O&#39;);
+		map[s.p[s.lenth - 1].getPos ().X][s.p[s.lenth - 1].getPos ().Y] &#x3D; 0;
+		s.p[s.lenth - 1].printPoint (&#39; &#39;);
+		for (int i &#x3D; s.lenth - 1; i &gt; 1; i--)
+		&#123;
+			s.p[i].setPosPoint (s.p[i - 1]);
+		&#125;
+		s.p[1].setPosPoint (temp);
+		Sleep (500);
+	&#125;
+
+	int isEatorEnd (Point q , int dirc)
+	&#x2F;&#x2F;传入蛇头坐标和此时蛇行进的方向，然后判断蛇下一次运动后是否吃到食物或撞到墙壁或自身，这里利用map进行判断
+	&#123;
+		q.movePoint (dirc);
+		if (map[q.getPos ().X][q.getPos ().Y] &#x3D;&#x3D; -1 || map[q.getPos ().X][q.getPos ().Y] &#x3D;&#x3D; 1)
+		&#123;
+			return -1;
+		&#125;
+		else if (map[q.getPos ().X][q.getPos ().Y] &#x3D;&#x3D; 2)
+		&#123;
+			return 1;
+		&#125;
+		else
+		&#123;
+			return 0;
+		&#125;
+	&#125;
+
+	void setDirection (char d)
+	&#x2F;&#x2F;注意到蛇在运动过程中不能直接向反方向移动
+	&#x2F;&#x2F;比如当蛇向上走时只能向左右转而不能直接向后转
+	&#123;
+		if (d &#x3D;&#x3D; &#39;w&#39; &amp;&amp; s.dirction !&#x3D; 2)
+		&#123;
+			s.dirction &#x3D; 1;
+		&#125;
+		else if (d &#x3D;&#x3D; &#39;s&#39; &amp;&amp; s.dirction !&#x3D; 1)
+		&#123;
+			s.dirction &#x3D; 2;
+		&#125;
+		else if (d &#x3D;&#x3D; &#39;a&#39; &amp;&amp; s.dirction !&#x3D; 4)
+		&#123;
+			s.dirction &#x3D; 3;
+		&#125;
+		else if (d &#x3D;&#x3D; &#39;d&#39; &amp;&amp; s.dirction !&#x3D; 3)
+		&#123;
+			s.dirction &#x3D; 4;
+		&#125;
+		else
+		&#123;
+			return;
+		&#125;
+	&#125;
+
+	Point &amp;getHead (void) &#123; return s.p[0]; &#125;
+
+	int getDirc (void) &#123; return s.dirction; &#125;
+
+	int getPoint (void) &#123; return score; &#125;
+
+	int getLenth (void) &#123; return s.lenth; &#125;
+&#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>贪吃蛇游戏的主要功能都是在Game类中定义的。Game类中有一个int型的二维数组，里面储存着整个地图中各个位置目前的状态，方便后面条件判断使用。<br />
 一些简单的函数的说明都以注释的方式写到代码里了，这里主要说一下snakeGo和eatFood这两个函数。</p>
 <h4 id="snakego函数"><a class="markdownIt-Anchor" href="#snakego函数"></a> snakeGo函数</h4>
@@ -327,7 +587,42 @@
 eatFood函数与snakeGo基本相同，不同点在于要在snake类中p数组中增加蛇尾位置的信息，lenth变量中增加蛇的长度。</p>
 <h3 id="主循环"><a class="markdownIt-Anchor" href="#主循环"></a> 主循环</h3>
 <p>接下来就是程序的执行部分，欢迎界面后便是主循环，游戏结束前的部分都将在这里完成。主循环内的二层循环以kbhit函数作为判断条件，函数的功能可以自行搜索，在用户改变蛇前进方向之前的部分都在这里进行。在每次循环进行时，会首先判断游戏是否结束或蛇是否将要吃到食物，然后再进行蛇的移动操作。</p>
-<pre class="highlight"><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;            您好，欢迎来到贪吃蛇           &quot;</span> &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;您可以通过&#x27;w&#x27;&#x27;a&#x27;&#x27;s&#x27;&#x27;d&#x27;来控制蛇的上下左右移动&quot;</span> &lt;&lt; endl;</span><br><span class="line">	<span class="built_in">system</span> (<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="built_in">system</span> (<span class="string">&quot;cls&quot;</span>);</span><br><span class="line">	Game g;</span><br><span class="line">	g.<span class="built_in">creatFood</span> ();</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">while</span> (!_kbhit ())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="type">int</span> i = g.<span class="built_in">isEatorEnd</span> (g.<span class="built_in">getHead</span> () , g.<span class="built_in">getDirc</span> ());</span><br><span class="line">			<span class="keyword">if</span> (i == <span class="number">1</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				g.<span class="built_in">eatFood</span> ();</span><br><span class="line">				<span class="keyword">if</span> (g.<span class="built_in">getLenth</span> () == <span class="number">361</span>)</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">goto</span> L;</span><br><span class="line">				&#125;</span><br><span class="line">				g.<span class="built_in">creatFood</span> ();</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (i == <span class="number">-1</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">goto</span> L;</span><br><span class="line">			&#125;</span><br><span class="line">			g.<span class="built_in">snakeGo</span> ();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="type">char</span> d = _getch ();</span><br><span class="line">		g.<span class="built_in">setDirection</span> (d);</span><br><span class="line">	&#125;</span><br><span class="line">L:<span class="built_in">system</span> (<span class="string">&quot;cls&quot;</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;游戏结束！您的得分为&quot;</span> &lt;&lt; g.<span class="built_in">getPoint</span> () &lt;&lt; endl;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int main ()
+&#123;
+	cout &lt;&lt; &quot;            您好，欢迎来到贪吃蛇           &quot; &lt;&lt; endl;
+	cout &lt;&lt; &quot;您可以通过&#39;w&#39;&#39;a&#39;&#39;s&#39;&#39;d&#39;来控制蛇的上下左右移动&quot; &lt;&lt; endl;
+	system (&quot;pause&quot;);
+	system (&quot;cls&quot;);
+	Game g;
+	g.creatFood ();
+	while (1)
+	&#123;
+		while (!_kbhit ())
+		&#123;
+			int i &#x3D; g.isEatorEnd (g.getHead () , g.getDirc ());
+			if (i &#x3D;&#x3D; 1)
+			&#123;
+				g.eatFood ();
+				if (g.getLenth () &#x3D;&#x3D; 361)
+				&#123;
+					goto L;
+				&#125;
+				g.creatFood ();
+				continue;
+			&#125;
+			else if (i &#x3D;&#x3D; -1)
+			&#123;
+				goto L;
+			&#125;
+			g.snakeGo ();
+		&#125;
+		char d &#x3D; _getch ();
+		g.setDirection (d);
+	&#125;
+L:system (&quot;cls&quot;);
+	cout &lt;&lt; &quot;游戏结束！您的得分为&quot; &lt;&lt; g.getPoint () &lt;&lt; endl;
+	return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
   </div>
   <div>
@@ -476,12 +771,6 @@ eatFood函数与snakeGo基本相同，不同点在于要在snake类中p数组中
       </a>
     
       <a 
-        href="/tags/C/" 
-        title="C++">
-        <div class="tags-list-item">C++</div>
-      </a>
-    
-      <a 
         href="/tags/%E6%95%B0%E5%AD%A6/" 
         title="数学">
         <div class="tags-list-item">数学</div>
@@ -491,6 +780,12 @@ eatFood函数与snakeGo基本相同，不同点在于要在snake类中p数组中
         href="/tags/%E7%AE%97%E6%B3%95/" 
         title="算法">
         <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/C/" 
+        title="C++">
+        <div class="tags-list-item">C++</div>
       </a>
     
   </div>

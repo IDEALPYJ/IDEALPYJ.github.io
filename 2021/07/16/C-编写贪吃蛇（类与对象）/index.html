@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="IDEALPYJ&#39;s Blog">
+  <link 
+    rel="icon" 
+    href="/img/logo.jpg">
+  <title>C++编写贪吃蛇（类与对象）</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="C++编写贪吃蛇（类与对象）">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2021/07/16/C-%E7%BC%96%E5%86%99%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%89/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="/img/author.png">
+    
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2021-07-16">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-03-26">
+      <meta 
+        property="og:article:author" 
+        content="IDEALPYJ">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="C++">
+        
+      
+    
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+    
+    <link rel="prefetch" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" as="script">
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="/img/logo.jpg" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">IDEALPYJ's blog</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+    <a 
+      class="navbar-menu-item darknavbar" 
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </a>
+    <a 
+      class="navbar-menu-item searchnavbar" 
+      id="search">
+      <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i>
+    </a>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      C++编写贪吃蛇（类与对象）
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-07-16T12:42:08.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2021-07-16</span>
+    </time>
+    
+    
+      <span class="dot"></span>
+      <span>2.4k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/C/" 
+            class="post-meta-link">
+            C++
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="c编写贪吃蛇使用类与对象"><a class="markdownIt-Anchor" href="#c编写贪吃蛇使用类与对象"></a> C++编写贪吃蛇（使用类与对象）</h1>
+<p>完成了一个学期的C<ins>学习后我决定用C</ins>编写一个贪吃蛇。本以为是一个十分基础的问题，网上应该有很多代码教程，但找了好久都没有合适的。要么没有使用类和对象来编写，要么连编译都通不过。无奈只能从头开始自己摸索着写。本人水平有限，代码算法可能存在着一些问题，欢迎读到这篇文章有其他想法的人在评论区理性讨论，大家互相学习。</p>
+<h2 id="思路"><a class="markdownIt-Anchor" href="#思路"></a> 思路</h2>
+<p>贪吃蛇游戏主要有这样三个部分：<strong>地图</strong>、<strong>蛇</strong>和<strong>食物</strong>。地图是蛇运动和食物生成的地方且在地图周围存在着墙作为边界。游戏运行的过程大致如下：</p>
+<p>1.游戏开始，生成地图并生成墙；<br />
+2.生成蛇，包括初始化蛇位置、长度和初始运动方向；<br />
+3.生成食物；<br />
+4.蛇朝着当前方向移动，直到接收到玩家改变运动方向的指令或蛇撞到墙或自身使游戏结束；<br />
+5.当蛇头下一步就要吃到食物时，蛇的长度加一，同时生成新的食物；<br />
+6.当蛇的长度达到最大值或死亡时游戏结束。</p>
+<h2 id="代码实现"><a class="markdownIt-Anchor" href="#代码实现"></a> 代码实现</h2>
+<h3 id="点类"><a class="markdownIt-Anchor" href="#点类"></a> 点类</h3>
+<p>在贪吃蛇中，不论是蛇本身还是食物都是由<strong>点</strong>组成的，在代码编写过程中，需要进行大量的对<strong>点</strong>的操作。<br />
+在编写游戏本体之前，我首先声明定义了点（Point）类，并编写了一些函数以便后面使用。</p>
+<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	COORD pos;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Point</span> () &#123; pos.X = <span class="number">0</span>; pos.Y = <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Point</span> (UINT x , UINT y)</span><br><span class="line">	&#123;</span><br><span class="line">		pos.X = x;</span><br><span class="line">		pos.Y = y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Point</span> (<span class="type">const</span> Point &amp;p)</span><br><span class="line">		:<span class="built_in">pos</span> (p.pos)</span><br><span class="line">	&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPos</span> <span class="params">(UINT x , UINT y)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		pos.X = x;</span><br><span class="line">		pos.Y = y;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPosPoint</span> <span class="params">(<span class="type">const</span> Point &amp;p)</span> </span>&#123; pos = p.pos; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setPosRandom</span> <span class="params">(<span class="type">int</span> isHead = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//生成随机位置的点，主要用于蛇的初始化和食物的生成</span></span></span><br><span class="line"><span class="function">	<span class="comment">//和食物不同，蛇头具有特殊性，它不能过于靠近地图的边缘，所以这里设计了isHead参数</span></span></span><br><span class="line"><span class="function">    <span class="comment">//当isHead不填时默认为零，此时用于生成食物的位置</span></span></span><br><span class="line"><span class="function">    <span class="comment">//当isHead传入参数为1时生成蛇头位置</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (isHead == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">srand</span> (<span class="built_in">time</span> (<span class="literal">NULL</span>));</span><br><span class="line">			pos.X = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">			pos.Y = <span class="built_in">rand</span> () % <span class="number">10</span> + <span class="number">7</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">srand</span> (<span class="built_in">time</span> (<span class="literal">NULL</span>));</span><br><span class="line">			pos.X = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">			pos.Y = <span class="built_in">rand</span> () % <span class="number">18</span> + <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">movePoint</span> <span class="params">(<span class="type">int</span> d)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (d == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.Y--;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.Y++;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">3</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.X--;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="number">4</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			pos.X++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function">COORD <span class="title">getPos</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> pos;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">printPoint</span> <span class="params">(<span class="type">char</span> c)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		HANDLE hOutput = <span class="built_in">GetStdHandle</span> (STD_OUTPUT_HANDLE);</span><br><span class="line">		<span class="built_in">SetConsoleCursorPosition</span> (hOutput , pos);</span><br><span class="line">		cout &lt;&lt; c;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre>
+<p>这个类实际上十分简单，它只包含自身位置这一个成员变量。成员函数的功能也大多为对点进行初始化或再赋值。这里面涉及到一些控制台的操作，不明白的可以去百度一下。这里只是简单涉及到，还是很好理解的。<br />
+有了这个工具后就可以开始游戏本体的编写了。</p>
+<h3 id="蛇"><a class="markdownIt-Anchor" href="#蛇"></a> 蛇</h3>
+<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Snake</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Point p[<span class="number">400</span>];</span><br><span class="line">	<span class="type">int</span> dirction;<span class="comment">//蛇目前的运动方向 1上2下3左4右</span></span><br><span class="line">	<span class="type">int</span> lenth;<span class="comment">//蛇的长度</span></span><br><span class="line">	<span class="keyword">friend</span> <span class="keyword">class</span> <span class="title class_">Game</span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Snake</span> ()</span><br><span class="line">	&#123;</span><br><span class="line">		lenth = <span class="number">3</span>;</span><br><span class="line">		p[<span class="number">0</span>].<span class="built_in">setPosRandom</span> (<span class="number">1</span>);</span><br><span class="line">		p[<span class="number">1</span>].<span class="built_in">setPos</span> (p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X , p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y + <span class="number">1</span>);</span><br><span class="line">		p[<span class="number">2</span>].<span class="built_in">setPos</span> (p[<span class="number">1</span>].<span class="built_in">getPos</span> ().X , p[<span class="number">1</span>].<span class="built_in">getPos</span> ().Y + <span class="number">1</span>);</span><br><span class="line">		dirction = <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre>
+<p>蛇这个类本身十分简单，成员函数只有一个无参构造函数。设计这个类的目的主要是储存与蛇本身有关的一些变量，并对蛇进行初始化。为了方便后面的操作，我将另一个Game类声明为Snake类的友元，这样Game中的函数也可以对Snake类中的变量直接进行操作了。</p>
+<h3 id="游戏功能"><a class="markdownIt-Anchor" href="#游戏功能"></a> 游戏功能</h3>
+<pre class="highlight"><span class="line"><span class="keyword">class</span> <span class="title class_">Game</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	Snake s;</span><br><span class="line">	<span class="type">int</span> map[<span class="number">20</span>][<span class="number">20</span>] = &#123;<span class="number">0</span>&#125;;<span class="comment">//0为空地 1为蛇身 2为食物 -1为墙</span></span><br><span class="line">	Point food;</span><br><span class="line">	<span class="type">int</span> score;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Game</span> ()</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++)<span class="comment">//这里初始化墙并在控制台打印出来</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="function">Point <span class="title">p1</span> <span class="params">(UINT (i) , UINT (<span class="number">0</span>))</span></span>;</span><br><span class="line">			map[i][<span class="number">0</span>] = <span class="number">-1</span>;</span><br><span class="line">			p1.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p2</span> <span class="params">(UINT (i) , UINT (<span class="number">19</span>))</span></span>;</span><br><span class="line">			map[i][<span class="number">19</span>] = <span class="number">-1</span>;</span><br><span class="line">			p2.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p3</span> <span class="params">(UINT (<span class="number">0</span>) , UINT (i))</span></span>;</span><br><span class="line">			map[<span class="number">0</span>][i] = <span class="number">-1</span>;</span><br><span class="line">			p3.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="function">Point <span class="title">p4</span> <span class="params">(UINT (<span class="number">19</span>) , UINT (i))</span></span>;</span><br><span class="line">			map[<span class="number">19</span>][i] = <span class="number">-1</span>;</span><br><span class="line">			p4.<span class="built_in">printPoint</span> (<span class="string">&#x27;=&#x27;</span>);</span><br><span class="line">			<span class="built_in">Sleep</span> (<span class="number">50</span>);<span class="comment">//这里是用来做出一种动画的效果</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; s.lenth; i++)<span class="comment">//这里在map中标记好蛇</span></span><br><span class="line">		&#123;</span><br><span class="line">			map[s.p[i].<span class="built_in">getPos</span> ().X][s.p[i].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)<span class="comment">//在控制台打印出蛇</span></span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		score = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">creatFood</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Point food;</span><br><span class="line">		<span class="keyword">while</span> (map[food.<span class="built_in">getPos</span> ().X][food.<span class="built_in">getPos</span> ().Y] != <span class="number">0</span>)<span class="comment">//只有当随机生成的位置在map中为0，也就是为空地时才进行下一步操作</span></span><br><span class="line">		&#123;</span><br><span class="line">			food.<span class="built_in">setPosRandom</span> ();</span><br><span class="line">		&#125;</span><br><span class="line">		map[food.<span class="built_in">getPos</span> ().X][food.<span class="built_in">getPos</span> ().Y] = <span class="number">2</span>;</span><br><span class="line">		food.<span class="built_in">printPoint</span> (<span class="string">&#x27;$&#x27;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">eatFood</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		score = score + <span class="number">100</span>;</span><br><span class="line">		<span class="function">Point <span class="title">temph</span> <span class="params">(s.p[<span class="number">0</span>])</span></span>;</span><br><span class="line">		<span class="function">Point <span class="title">tempt</span> <span class="params">(s.p[s.lenth - <span class="number">1</span>])</span></span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">movePoint</span> (s.dirction);</span><br><span class="line">		map[s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X][s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = s.lenth - <span class="number">1</span>; i &gt; <span class="number">1</span>; i--)</span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">setPosPoint</span> (s.p[i - <span class="number">1</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		s.p[<span class="number">1</span>].<span class="built_in">setPosPoint</span> (temph);</span><br><span class="line">		s.lenth++;</span><br><span class="line">		s.p[s.lenth - <span class="number">1</span>].<span class="built_in">setPosPoint</span> (tempt);</span><br><span class="line">		<span class="built_in">Sleep</span> (<span class="number">500</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">snakeGo</span> <span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="function">Point <span class="title">temp</span> <span class="params">(s.p[<span class="number">0</span>])</span></span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">movePoint</span> (s.dirction);</span><br><span class="line">		map[s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().X][s.p[<span class="number">0</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">1</span>;</span><br><span class="line">		s.p[<span class="number">0</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27;O&#x27;</span>);</span><br><span class="line">		map[s.p[s.lenth - <span class="number">1</span>].<span class="built_in">getPos</span> ().X][s.p[s.lenth - <span class="number">1</span>].<span class="built_in">getPos</span> ().Y] = <span class="number">0</span>;</span><br><span class="line">		s.p[s.lenth - <span class="number">1</span>].<span class="built_in">printPoint</span> (<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = s.lenth - <span class="number">1</span>; i &gt; <span class="number">1</span>; i--)</span><br><span class="line">		&#123;</span><br><span class="line">			s.p[i].<span class="built_in">setPosPoint</span> (s.p[i - <span class="number">1</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		s.p[<span class="number">1</span>].<span class="built_in">setPosPoint</span> (temp);</span><br><span class="line">		<span class="built_in">Sleep</span> (<span class="number">500</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">isEatorEnd</span> <span class="params">(Point q , <span class="type">int</span> dirc)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//传入蛇头坐标和此时蛇行进的方向，然后判断蛇下一次运动后是否吃到食物或撞到墙壁或自身，这里利用map进行判断</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		q.<span class="built_in">movePoint</span> (dirc);</span><br><span class="line">		<span class="keyword">if</span> (map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">-1</span> || map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (map[q.<span class="built_in">getPos</span> ().X][q.<span class="built_in">getPos</span> ().Y] == <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">setDirection</span> <span class="params">(<span class="type">char</span> d)</span></span></span><br><span class="line"><span class="function">	<span class="comment">//注意到蛇在运动过程中不能直接向反方向移动</span></span></span><br><span class="line"><span class="function">	<span class="comment">//比如当蛇向上走时只能向左右转而不能直接向后转</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (d == <span class="string">&#x27;w&#x27;</span> &amp;&amp; s.dirction != <span class="number">2</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;s&#x27;</span> &amp;&amp; s.dirction != <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">2</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;a&#x27;</span> &amp;&amp; s.dirction != <span class="number">4</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">3</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (d == <span class="string">&#x27;d&#x27;</span> &amp;&amp; s.dirction != <span class="number">3</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			s.dirction = <span class="number">4</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function">Point &amp;<span class="title">getHead</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.p[<span class="number">0</span>]; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getDirc</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.dirction; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getPoint</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> score; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getLenth</span> <span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> s.lenth; &#125;</span><br><span class="line">&#125;;</span><br></pre>
+<p>贪吃蛇游戏的主要功能都是在Game类中定义的。Game类中有一个int型的二维数组，里面储存着整个地图中各个位置目前的状态，方便后面条件判断使用。<br />
+一些简单的函数的说明都以注释的方式写到代码里了，这里主要说一下snakeGo和eatFood这两个函数。</p>
+<h4 id="snakego函数"><a class="markdownIt-Anchor" href="#snakego函数"></a> snakeGo函数</h4>
+<p>snakeGo函数可以说是整个游戏的核心所在。这里简单示意一下蛇运动一次需要经历的步骤。<br />
+这里首先要说明一下，游戏中一共有三个地方储存蛇的位置：蛇类中Point类里储存的控制台坐标，变量map中相应位置储存的“1”和控制台窗口上实际打印出的蛇。蛇要完成一次移动，就要将这三个都进行改变。<br />
+第一步要先将表示蛇头点的控制台坐标暂时储存下来；第二步要将储存蛇头位置的三个地方进行相应的改动；第三步将蛇尾从map和控制台窗口中抹去；最后一步将中间蛇身的所有点的坐标变为其前一个点的坐标。<br />
+这里可以注意到在移动过程中控制台窗口只需关注蛇头和蛇尾的变化情况即可。<br />
+函数最后的Sleep函数实现了蛇移动后的短暂停顿。</p>
+<h4 id="eatfood函数"><a class="markdownIt-Anchor" href="#eatfood函数"></a> eatFood函数</h4>
+<p>eatFood函数用来控制当蛇吃到食物时的运动状况。当判断到蛇在下一次运动时会吃到食物时（通过主函数调用isEatorEnd函数实现），主函数会调用eatFood函数进行蛇的运动而不是snakeGo并在执行完成后直接进入下一循环。<br />
+eatFood函数与snakeGo基本相同，不同点在于要在snake类中p数组中增加蛇尾位置的信息，lenth变量中增加蛇的长度。</p>
+<h3 id="主循环"><a class="markdownIt-Anchor" href="#主循环"></a> 主循环</h3>
+<p>接下来就是程序的执行部分，欢迎界面后便是主循环，游戏结束前的部分都将在这里完成。主循环内的二层循环以kbhit函数作为判断条件，函数的功能可以自行搜索，在用户改变蛇前进方向之前的部分都在这里进行。在每次循环进行时，会首先判断游戏是否结束或蛇是否将要吃到食物，然后再进行蛇的移动操作。</p>
+<pre class="highlight"><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;            您好，欢迎来到贪吃蛇           &quot;</span> &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;您可以通过&#x27;w&#x27;&#x27;a&#x27;&#x27;s&#x27;&#x27;d&#x27;来控制蛇的上下左右移动&quot;</span> &lt;&lt; endl;</span><br><span class="line">	<span class="built_in">system</span> (<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="built_in">system</span> (<span class="string">&quot;cls&quot;</span>);</span><br><span class="line">	Game g;</span><br><span class="line">	g.<span class="built_in">creatFood</span> ();</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">while</span> (!_kbhit ())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="type">int</span> i = g.<span class="built_in">isEatorEnd</span> (g.<span class="built_in">getHead</span> () , g.<span class="built_in">getDirc</span> ());</span><br><span class="line">			<span class="keyword">if</span> (i == <span class="number">1</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				g.<span class="built_in">eatFood</span> ();</span><br><span class="line">				<span class="keyword">if</span> (g.<span class="built_in">getLenth</span> () == <span class="number">361</span>)</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">goto</span> L;</span><br><span class="line">				&#125;</span><br><span class="line">				g.<span class="built_in">creatFood</span> ();</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (i == <span class="number">-1</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">goto</span> L;</span><br><span class="line">			&#125;</span><br><span class="line">			g.<span class="built_in">snakeGo</span> ();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="type">char</span> d = _getch ();</span><br><span class="line">		g.<span class="built_in">setDirection</span> (d);</span><br><span class="line">	&#125;</span><br><span class="line">L:<span class="built_in">system</span> (<span class="string">&quot;cls&quot;</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;游戏结束！您的得分为&quot;</span> &lt;&lt; g.<span class="built_in">getPoint</span> () &lt;&lt; endl;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/03/26/%E5%89%8D%E7%BC%80%E5%92%8C%E4%B8%8E%E5%B7%AE%E5%88%86/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">前缀和与差分 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2021/01/15/%E5%AD%A6%E7%94%9F%E6%88%90%E7%BB%A9%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%EF%BC%88C%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%EF%BC%89/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">学生成绩管理系统（C语言实现） </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#c%E7%BC%96%E5%86%99%E8%B4%AA%E5%90%83%E8%9B%87%E4%BD%BF%E7%94%A8%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1"><span class="toc-text"> C++编写贪吃蛇（使用类与对象）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text"> 代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E7%B1%BB"><span class="toc-text"> 点类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%9B%87"><span class="toc-text"> 蛇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E5%8A%9F%E8%83%BD"><span class="toc-text"> 游戏功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#snakego%E5%87%BD%E6%95%B0"><span class="toc-text"> snakeGo函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eatfood%E5%87%BD%E6%95%B0"><span class="toc-text"> eatFood函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%BE%AA%E7%8E%AF"><span class="toc-text"> 主循环</span></a></li></ol></li></ol></li></ol>
+</div></main>
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="/img/author.png" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">IDEALPYJ</p>
+<p class="author-description"></p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>3</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>0</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>4</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/IDEALPYJ">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a href="mailto:idealpyj@163.com">
+          <i class="iconfont icon-mail society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#c%E7%BC%96%E5%86%99%E8%B4%AA%E5%90%83%E8%9B%87%E4%BD%BF%E7%94%A8%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1"><span class="toc-text"> C++编写贪吃蛇（使用类与对象）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text"> 代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E7%B1%BB"><span class="toc-text"> 点类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%9B%87"><span class="toc-text"> 蛇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E5%8A%9F%E8%83%BD"><span class="toc-text"> 游戏功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#snakego%E5%87%BD%E6%95%B0"><span class="toc-text"> snakeGo函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eatfood%E5%87%BD%E6%95%B0"><span class="toc-text"> eatFood函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%BE%AA%E7%8E%AF"><span class="toc-text"> 主循环</span></a></li></ol></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/C/" 
+        title="C">
+        <div class="tags-list-item">C</div>
+      </a>
+    
+      <a 
+        href="/tags/C/" 
+        title="C++">
+        <div class="tags-list-item">C++</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#c%E7%BC%96%E5%86%99%E8%B4%AA%E5%90%83%E8%9B%87%E4%BD%BF%E7%94%A8%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1"><span class="toc-text"> C++编写贪吃蛇（使用类与对象）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text"> 代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E7%B1%BB"><span class="toc-text"> 点类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%9B%87"><span class="toc-text"> 蛇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E5%8A%9F%E8%83%BD"><span class="toc-text"> 游戏功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#snakego%E5%87%BD%E6%95%B0"><span class="toc-text"> snakeGo函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eatfood%E5%87%BD%E6%95%B0"><span class="toc-text"> eatFood函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%BE%AA%E7%8E%AF"><span class="toc-text"> 主循环</span></a></li></ol></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-03-26</div>
+        <a href="/2022/03/26/%E5%89%8D%E7%BC%80%E5%92%8C%E4%B8%8E%E5%B7%AE%E5%88%86/"><div class="recent-posts-item-content">前缀和与差分</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-07-16</div>
+        <a href="/2021/07/16/C-%E7%BC%96%E5%86%99%E8%B4%AA%E5%90%83%E8%9B%87%EF%BC%88%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%89/"><div class="recent-posts-item-content">C++编写贪吃蛇（类与对象）</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-01-15</div>
+        <a href="/2021/01/15/%E5%AD%A6%E7%94%9F%E6%88%90%E7%BB%A9%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%EF%BC%88C%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%EF%BC%89/"><div class="recent-posts-item-content">学生成绩管理系统（C语言实现）</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          IDEALPYJ's blog
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+        
+      </div>
+    
+    
+    
+    
+      <div class="footer-dsc">
+        
+          本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          本站总访客数<span id="busuanzi_value_site_uv"></span>次
+        
+      </div>
+      
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+      
+
+  
+  
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
+
+  
+ 
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+    
+      <script> 
+        loadScript('/js/lib/busuanzi.min.js') 
+      </script>
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+     
+    
+    
+      <script>
+        setTimeout(() => {localSearch("search.json")}, 0)
+      </script>
+    
+  </body>
+</html>
